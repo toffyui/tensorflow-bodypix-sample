@@ -1,8 +1,78 @@
+/* eslint-disable @next/next/no-img-element */
+import { useRef, useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
+import "@tensorflow/tfjs-core";
+import "@tensorflow/tfjs-converter";
+import "@tensorflow/tfjs-backend-webgl";
+import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
+import Webcam from "react-webcam";
+import { MediaPipeFaceMesh } from "@tensorflow-models/face-landmarks-detection/dist/types";
+import { draw } from "../libs/mask";
 import styles from "../styles/Home.module.css";
+import * as bodyPix from "@tensorflow-models/body-pix";
+import sample from "../assets/sample.png";
+import { useBodyPix } from "../libs/createBodyPixStream";
 
-export default function Home() {
+function Home() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { stream, segment, video } = useBodyPix();
+
+  useEffect(() => {
+    if (!segment) return;
+    segmentBody(video, canvasRef.current!);
+  }, [segment]);
+
+  async function segmentBody(input, output) {
+    const net = await bodyPix.load();
+    async function renderFrame() {
+      const segmentation = await net.segmentPerson(input);
+      const backgroundBlurAmount = 10;
+      const edgeBlurAmount = 10;
+      const flipHorizontal = true;
+      bodyPix.drawBokehEffect(
+        output,
+        input,
+        segmentation,
+        backgroundBlurAmount,
+        edgeBlurAmount,
+        flipHorizontal
+      );
+      requestAnimationFrame(renderFrame);
+    }
+    renderFrame();
+  }
+
+  // const useFaceDetect = async () => {
+  //   const model = await faceLandmarksDetection.load(
+  //     faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
+  //   );
+  //   detect(model);
+  // };
+
+  // const detect = async (model: MediaPipeFaceMesh) => {
+  //   if (!webcam.current || !canvas.current) return;
+  //   const webcamCurrent = webcam.current as any;
+  //   if (webcamCurrent.video.readyState !== 4) {
+  //     detect(model);
+  //   }
+  //   const video = webcamCurrent.video;
+  //   const videoWidth = webcamCurrent.video.videoWidth;
+  //   const videoHeight = webcamCurrent.video.videoHeight;
+  //   canvas.current.width = videoWidth;
+  //   canvas.current.height = videoHeight;
+  //   const predictions = await model.estimateFaces({
+  //     input: video,
+  //   });
+  //   const ctx = canvas.current.getContext("2d") as CanvasRenderingContext2D;
+  //   requestAnimationFrame(() => {
+  //     draw(predictions, ctx, videoWidth, videoHeight);
+  //   });
+  //   detect(model);
+  //   return;
+  // };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,58 +82,33 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className={styles.videoList}>
+          {stream && (
+            <video
+              className={styles.video}
+              muted
+              autoPlay
+              ref={(video) =>
+                video &&
+                video.srcObject !== stream &&
+                (video.srcObject = stream)
+              }
+            />
+          )}
+          {segment && (
+            <canvas
+              ref={canvasRef}
+              className={styles.canvas}
+              width={segment.width}
+              height={segment.height}
+            />
+          )}
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <footer className={styles.footer}></footer>
     </div>
   );
 }
+
+export default Home;

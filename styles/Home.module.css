@@ -17,6 +17,35 @@
   align-items: center;
 }
 
+.videoList {
+  line-height: 0;
+  position: relative;
+  display: inline-block;
+  border: solid 1px black;
+  box-sizing: content-box;
+}
+.message {
+  position: absolute;
+  color: black;
+  font-weight: bolder;
+  -webkit-text-stroke: 0.2px white;
+}
+.video {
+}
+.parts {
+  font-size: 24px;
+  position: absolute;
+  color: #ffffff;
+  text-shadow: 2px 2px 1px #003366, -2px 2px 1px #003366, 2px -2px 1px #003366,
+    -2px -2px 1px #003366, 2px 0px 1px #003366, 0px 2px 1px #003366,
+    -2px 0px 1px #003366, 0px -2px 1px #003366;
+}
+.canvas {
+  left: 0;
+  top: 0;
+  position: absolute;
+}
+
 .footer {
   width: 100%;
   height: 100px;
