@@ -1,0 +1,21 @@
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+  title: "Let's go travel online!",
+  select: "Choose a country you want to visit.",
+  argentina: "Argentina",
+  austria: "Austria",
+  brazil: "Brazil",
+  bulgaria: "Bulgaria",
+  cambodia: "Cambodia",
+  dubai: "Dubai",
+  egypt: "Egypt",
+  germany: "Germany",
+  india: "India",
+  korea: "Korea",
+  romania: "Romania",
+  slovakia: "Slovakia",
+  spain: "Spain",
+  tailand: "Tailand",
+  taiwan: "Taiwan",
+  turky: "Turky",
+};

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { useRef, useState, useEffect } from "react";
 import Head from "next/head";
 import "@tensorflow/tfjs-core";
@@ -7,12 +6,17 @@ import "@tensorflow/tfjs-backend-webgl";
 import styles from "../styles/Home.module.scss";
 import * as bodyPix from "@tensorflow-models/body-pix";
 import Webcam from "react-webcam";
+import { useRouter } from "next/dist/client/router";
+import en from "../locales/en";
+import ja from "../locales/ja";
 
 function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webcamRef = useRef<Webcam>(null);
   const [bodypixnet, setBodypixnet] = useState<bodyPix.BodyPix>();
   const [prevStyle, setPrevStyle] = useState<string>();
+  const { locale } = useRouter();
+  const t = locale === "en" ? en : ja;
 
   useEffect(() => {
     bodyPix.load().then((net: bodyPix.BodyPix) => {
@@ -27,7 +31,7 @@ function Home() {
   ) => {
     webcam.width = canvas.width = webcam.videoWidth;
     webcam.height = canvas.height = webcam.videoHeight;
-    // to remove background, need another canvas
+    // create tempCanvas
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = webcam.videoWidth;
     tempCanvas.height = webcam.videoHeight;
@@ -35,11 +39,11 @@ function Home() {
     (async function loop() {
       requestAnimationFrame(loop);
 
-      // create mask on temp canvas
+      // paste mask on tempCanvas
       const segmentation = await bodypixnet.segmentPerson(webcam);
       const mask = bodyPix.toMask(segmentation);
       tempCtx.putImageData(mask, 0, 0);
-      // draw original
+      // draw original image
       context.drawImage(webcam, 0, 0, canvas.width, canvas.height);
       // then overwrap, masked area will be removed
       context.save();
@@ -83,7 +87,7 @@ function Home() {
         <link rel="icon" href="/static/logo.jpg" />
       </Head>
       <header className={styles.header}>
-        <h1 className={styles.title}>バーチャル旅行</h1>
+        <h1 className={styles.title}>{t.title}</h1>
       </header>
       <main className={styles.main}>
         <div className={styles.videoContainer}>
@@ -91,28 +95,32 @@ function Home() {
           <canvas ref={canvasRef} className={styles.canvas} />
         </div>
         <div className={styles.right}>
-          <h4>行きたい国を選んでください</h4>
+          <h4 className={styles.title}>{t.select}</h4>
           <div className={styles.buttons}>
             <button onClick={() => onClick(styles.argentina)}>
-              アルゼンチン
+              {t.argentina}
             </button>
-            <button onClick={() => onClick(styles.austria)}>
-              オーストリア
+            <button onClick={() => onClick(styles.austria)}>{t.austria}</button>
+            <button onClick={() => onClick(styles.brazil)}>{t.brazil}</button>
+            <button onClick={() => onClick(styles.bulgaria)}>
+              {t.bulgaria}
             </button>
-            <button onClick={() => onClick(styles.brazil)}>ブラジル</button>
-            <button onClick={() => onClick(styles.bulgaria)}>ブルガリア</button>
-            <button onClick={() => onClick(styles.cambodia)}>カンボジア</button>
-            <button onClick={() => onClick(styles.dubai)}>ドバイ</button>
-            <button onClick={() => onClick(styles.egypt)}>エジプト</button>
-            <button onClick={() => onClick(styles.germany)}>ドイツ</button>
-            <button onClick={() => onClick(styles.india)}>インド</button>
-            <button onClick={() => onClick(styles.korea)}>韓国</button>
-            <button onClick={() => onClick(styles.romania)}>ルーマニア</button>
-            <button onClick={() => onClick(styles.slovakia)}>スロバキア</button>
-            <button onClick={() => onClick(styles.spain)}>スペイン</button>
-            <button onClick={() => onClick(styles.tailand)}>タイ</button>
-            <button onClick={() => onClick(styles.taiwan)}>台湾</button>
-            <button onClick={() => onClick(styles.turky)}>トルコ</button>
+            <button onClick={() => onClick(styles.cambodia)}>
+              {t.cambodia}
+            </button>
+            <button onClick={() => onClick(styles.dubai)}>{t.dubai}</button>
+            <button onClick={() => onClick(styles.egypt)}>{t.egypt}</button>
+            <button onClick={() => onClick(styles.germany)}>{t.germany}</button>
+            <button onClick={() => onClick(styles.india)}>{t.india}</button>
+            <button onClick={() => onClick(styles.korea)}>{t.korea}</button>
+            <button onClick={() => onClick(styles.romania)}>{t.romania}</button>
+            <button onClick={() => onClick(styles.slovakia)}>
+              {t.slovakia}
+            </button>
+            <button onClick={() => onClick(styles.spain)}>{t.spain}</button>
+            <button onClick={() => onClick(styles.tailand)}>{t.tailand}</button>
+            <button onClick={() => onClick(styles.taiwan)}>{t.taiwan}</button>
+            <button onClick={() => onClick(styles.turky)}>{t.turky}</button>
           </div>
         </div>
       </main>

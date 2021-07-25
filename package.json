@@ -14,7 +14,6 @@
     "@tensorflow/tfjs-converter": "^3.8.0",
     "@tensorflow/tfjs-core": "^3.8.0",
     "@types/react-webcam": "^3.0.0",
-    "bootstrap": "^5.0.0-beta3",
     "canvas": "^2.8.0",
     "next": "11.0.1",
     "react": "17.0.2",

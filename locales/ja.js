@@ -1,0 +1,21 @@
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+  title: "バーチャル旅行",
+  select: "行きたい国を選んでください",
+  argentina: "アルゼンチン",
+  austria: "オーストリア",
+  brazil: "ブラジル",
+  bulgaria: "ブルガリア",
+  cambodia: "カンボジア",
+  dubai: "ドバイ",
+  egypt: "エジプト",
+  germany: "ドイツ",
+  india: "インド",
+  korea: "韓国",
+  romania: "ルーマニア",
+  slovakia: "スロバキア",
+  spain: "スペイン",
+  tailand: "タイ",
+  taiwan: "台湾",
+  turky: "トルコ",
+};
