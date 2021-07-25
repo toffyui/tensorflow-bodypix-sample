@@ -1,77 +1,78 @@
 /* eslint-disable @next/next/no-img-element */
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
-import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
-import Webcam from "react-webcam";
-import { MediaPipeFaceMesh } from "@tensorflow-models/face-landmarks-detection/dist/types";
-import { draw } from "../libs/mask";
 import styles from "../styles/Home.module.css";
-import * as bodyPix from "@tensorflow-models/body-pix";
 import sample from "../assets/sample.png";
-import { useBodyPix } from "../libs/createBodyPixStream";
+
+import * as bodyPix from "@tensorflow-models/body-pix";
+import Webcam from "react-webcam";
+// import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
+// import { MediaPipeFaceMesh } from "@tensorflow-models/face-landmarks-detection/dist/types";
+// import { draw } from "../libs/mask";
 
 function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { stream, segment, video } = useBodyPix();
+  const webcamRef = useRef<Webcam>(null);
+  const [mask, setMask] = useState<any>();
+  const [bodypixnet, setBodypixnet] = useState<bodyPix.BodyPix>();
 
   useEffect(() => {
-    if (!segment) return;
-    segmentBody(video, canvasRef.current!);
-  }, [segment]);
+    bodyPix.load().then((net: bodyPix.BodyPix) => {
+      setBodypixnet(net);
+    });
+  }, []);
 
-  async function segmentBody(input, output) {
-    const net = await bodyPix.load();
-    async function renderFrame() {
-      const segmentation = await net.segmentPerson(input);
-      const backgroundBlurAmount = 10;
-      const edgeBlurAmount = 10;
-      const flipHorizontal = true;
-      bodyPix.drawBokehEffect(
-        output,
-        input,
-        segmentation,
-        backgroundBlurAmount,
-        edgeBlurAmount,
-        flipHorizontal
-      );
-      requestAnimationFrame(renderFrame);
+  useEffect(() => {
+    const webcam = webcamRef.current.video as HTMLVideoElement;
+    const canvas = canvasRef.current;
+    const opacity = 1;
+
+    if (mask) {
+      bodyPix.drawPixelatedMask(canvas, webcam, mask, opacity, 0, false, 15);
     }
-    renderFrame();
+  }, [mask, webcamRef, canvasRef, bodypixnet]);
+
+  const showResult = useCallback((seg) => {
+    const foregroundColor = { r: 255, g: 255, b: 255, a: 1 };
+    const backgroundColor = { r: 255, g: 255, b: 255, a: 255 };
+    setMask(bodyPix.toMask(seg, foregroundColor, backgroundColor, false));
+  }, []);
+
+  const start = useCallback(() => {
+    setInterval(() => {
+      const webcam = webcamRef.current.video as HTMLVideoElement;
+      if (bodypixnet) {
+        bodypixnet.segmentPerson(webcam).then((seg) => {
+          showResult(seg);
+          renderSegmentation(seg);
+        });
+      }
+    }, 100);
+  }, [bodypixnet, showResult]);
+
+  function draw(text) {
+    const canvas = canvasRef.current;
+    var ctx = canvas.getContext("2d");
+    ctx.font = "48px serif";
+    ctx.fillText(text, 10, 50);
   }
 
-  // const useFaceDetect = async () => {
-  //   const model = await faceLandmarksDetection.load(
-  //     faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
-  //   );
-  //   detect(model);
-  // };
-
-  // const detect = async (model: MediaPipeFaceMesh) => {
-  //   if (!webcam.current || !canvas.current) return;
-  //   const webcamCurrent = webcam.current as any;
-  //   if (webcamCurrent.video.readyState !== 4) {
-  //     detect(model);
-  //   }
-  //   const video = webcamCurrent.video;
-  //   const videoWidth = webcamCurrent.video.videoWidth;
-  //   const videoHeight = webcamCurrent.video.videoHeight;
-  //   canvas.current.width = videoWidth;
-  //   canvas.current.height = videoHeight;
-  //   const predictions = await model.estimateFaces({
-  //     input: video,
-  //   });
-  //   const ctx = canvas.current.getContext("2d") as CanvasRenderingContext2D;
-  //   requestAnimationFrame(() => {
-  //     draw(predictions, ctx, videoWidth, videoHeight);
-  //   });
-  //   detect(model);
-  //   return;
-  // };
+  function renderSegmentation(segmentation) {
+    let s = "";
+    const xStride = Math.max(1, Math.floor(segmentation.width / 30)); // ~30 wide
+    const yStride = xStride * 2; // chars are ~twice as tall as they are wide
+    for (let y = 0; y < segmentation.height; y += yStride) {
+      for (let x = 0; x < segmentation.width; x += xStride) {
+        s += segmentation.data[segmentation.width * y + x] == 1 ? "1" : "0";
+      }
+      s += "\n";
+    }
+    console.log(s);
+  }
 
   return (
     <div className={styles.container}>
@@ -82,31 +83,33 @@ function Home() {
       </Head>
 
       <main className={styles.main}>
-        <div className={styles.videoList}>
-          {stream && (
-            <video
-              className={styles.video}
-              muted
-              autoPlay
-              ref={(video) =>
-                video &&
-                video.srcObject !== stream &&
-                (video.srcObject = stream)
-              }
-            />
-          )}
-          {segment && (
-            <canvas
-              ref={canvasRef}
-              className={styles.canvas}
-              width={segment.width}
-              height={segment.height}
-            />
-          )}
-        </div>
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          style={{
+            position: "absolute",
+            margin: "auto",
+            textAlign: "center",
+            top: 100,
+            left: 0,
+            right: 0,
+            zIndex: 9,
+          }}
+        />
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: "absolute",
+            margin: "auto",
+            textAlign: "center",
+            top: 100,
+            left: 0,
+            right: 0,
+            zIndex: 9,
+          }}
+        />
       </main>
-
-      <footer className={styles.footer}></footer>
+      <button onClick={start}>start</button>
     </div>
   );
 }
