@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@tensorflow-models/body-pix": "^2.2.0",
-    "@tensorflow-models/face-landmarks-detection": "^0.0.3",
     "@tensorflow/tfjs-backend-webgl": "^3.8.0",
     "@tensorflow/tfjs-converter": "^3.8.0",
     "@tensorflow/tfjs-core": "^3.8.0",
