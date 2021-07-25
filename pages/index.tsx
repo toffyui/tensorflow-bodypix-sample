@@ -12,6 +12,7 @@ function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webcamRef = useRef<Webcam>(null);
   const [bodypixnet, setBodypixnet] = useState<bodyPix.BodyPix>();
+  const [prevStyle, setPrevStyle] = useState<string>();
 
   useEffect(() => {
     bodyPix.load().then((net: bodyPix.BodyPix) => {
@@ -56,6 +57,13 @@ function Home() {
     webcam.height = canvas.height = webcam.videoHeight;
 
     const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (prevStyle) {
+      canvas.classList.remove(prevStyle);
+      setPrevStyle(style);
+    } else {
+      setPrevStyle(style);
+    }
     canvas.classList.add(style);
 
     // to remove background, need another canvas
@@ -67,7 +75,6 @@ function Home() {
       drawimage(webcam, context, canvas);
     }
   };
-
   return (
     <div className={styles.container}>
       <Head>
@@ -76,15 +83,35 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.header}>
-        <h1 className={styles.title}>オンライン旅行</h1>
+        <h1 className={styles.title}>バーチャル旅行</h1>
       </header>
       <main className={styles.main}>
-        <Webcam audio={false} ref={webcamRef} className={styles.default} />
-        <canvas ref={canvasRef} className={styles.default} />
+        <div className={styles.videoContainer}>
+          <Webcam audio={false} ref={webcamRef} className={styles.video} />
+          <canvas ref={canvasRef} className={styles.canvas} />
+        </div>
+        <div className={styles.right}>
+          <h4>行きたい国を選んでください</h4>
+          <div className={styles.buttons}>
+            <button onClick={() => onClick(styles.argentina)}>
+              アルゼンチン
+            </button>
+            <button onClick={() => onClick(styles.austria)}>
+              オーストリア
+            </button>
+            <button onClick={() => onClick(styles.brazil)}>ブラジル</button>
+            <button onClick={() => onClick(styles.bulgaria)}>ブルガリア</button>
+            <button onClick={() => onClick(styles.cambodia)}>カンボジア</button>
+            <button onClick={() => onClick(styles.egypt)}>エジプト</button>
+            <button onClick={() => onClick(styles.india)}>インド</button>
+            <button onClick={() => onClick(styles.korea)}>韓国</button>
+            <button onClick={() => onClick(styles.spain)}>スペイン</button>
+            <button onClick={() => onClick(styles.tailand)}>タイ</button>
+            <button onClick={() => onClick(styles.taiwan)}>台湾</button>
+            <button onClick={() => onClick(styles.turky)}>トルコ</button>
+          </div>
+        </div>
       </main>
-      <div className={styles.buttons}>
-        <button onClick={() => onClick(styles.canvas)}>start</button>
-      </div>
     </div>
   );
 }
