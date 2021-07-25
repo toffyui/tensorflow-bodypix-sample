@@ -30,61 +30,61 @@
 
 .argentina {
   background-image: url(../assets/argentina.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .austria {
   background-image: url(../assets/austria.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .brazil {
   background-image: url(../assets/brazil.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .bulgaria {
   background-image: url(../assets/bulgaria.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .cambodia {
   background-image: url(../assets/cambodia.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .egypt {
   background-image: url(../assets/egypt.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .india {
   background-image: url(../assets/india.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .korea {
   background-image: url(../assets/korea.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .spain {
   background-image: url(../assets/spain.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .tailand {
   background-image: url(../assets/tailand.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .taiwan {
   background-image: url(../assets/taiwan.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 .turky {
   background-image: url(../assets/turky.jpg);
-  background-size: contain;
+  background-size: cover;
 }
 
 .videoContainer {
@@ -170,6 +170,7 @@
   .videoContainer {
     width: 100%;
     margin-top: 20px;
+    max-height: calc(100vw * 0.8);
   }
   .right {
     margin-top: 350px;
