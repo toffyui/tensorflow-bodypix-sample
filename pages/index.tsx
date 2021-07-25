@@ -102,9 +102,13 @@ function Home() {
             <button onClick={() => onClick(styles.brazil)}>ブラジル</button>
             <button onClick={() => onClick(styles.bulgaria)}>ブルガリア</button>
             <button onClick={() => onClick(styles.cambodia)}>カンボジア</button>
+            <button onClick={() => onClick(styles.dubai)}>ドバイ</button>
             <button onClick={() => onClick(styles.egypt)}>エジプト</button>
+            <button onClick={() => onClick(styles.germany)}>ドイツ</button>
             <button onClick={() => onClick(styles.india)}>インド</button>
             <button onClick={() => onClick(styles.korea)}>韓国</button>
+            <button onClick={() => onClick(styles.romania)}>ルーマニア</button>
+            <button onClick={() => onClick(styles.slovakia)}>スロバキア</button>
             <button onClick={() => onClick(styles.spain)}>スペイン</button>
             <button onClick={() => onClick(styles.tailand)}>タイ</button>
             <button onClick={() => onClick(styles.taiwan)}>台湾</button>

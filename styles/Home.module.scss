@@ -53,8 +53,18 @@
   background-size: cover;
 }
 
+.dubai {
+  background-image: url(../assets/dubai.jpg);
+  background-size: cover;
+}
+
 .egypt {
   background-image: url(../assets/egypt.jpg);
+  background-size: cover;
+}
+
+.germany {
+  background-image: url(../assets/germany.jpg);
   background-size: cover;
 }
 
@@ -65,6 +75,16 @@
 
 .korea {
   background-image: url(../assets/korea.jpg);
+  background-size: cover;
+}
+
+.romania {
+  background-image: url(../assets/romania.jpg);
+  background-size: cover;
+}
+
+.slovakia {
+  background-image: url(../assets/slovakia.jpg);
   background-size: cover;
 }
 
@@ -170,9 +190,23 @@
   .videoContainer {
     width: 100%;
     margin-top: 20px;
-    max-height: calc(100vw * 0.8);
+  }
+
+  .video {
+    max-height: 300px;
+  }
+
+  .canvas {
+    max-height: 300px;
   }
   .right {
     margin-top: 350px;
+  }
+  .buttons {
+    width: 100%;
+
+    button {
+      width: calc(100% * 1 / 2);
+    }
   }
 }
