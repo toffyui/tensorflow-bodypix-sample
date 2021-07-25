@@ -29,8 +29,6 @@ function Home() {
     context: CanvasRenderingContext2D,
     canvas: HTMLCanvasElement
   ) => {
-    webcam.width = canvas.width = webcam.videoWidth;
-    webcam.height = canvas.height = webcam.videoHeight;
     // create tempCanvas
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = webcam.videoWidth;
@@ -59,7 +57,6 @@ function Home() {
     const canvas = canvasRef.current;
     webcam.width = canvas.width = webcam.videoWidth;
     webcam.height = canvas.height = webcam.videoHeight;
-
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
     if (prevStyle) {
@@ -69,12 +66,6 @@ function Home() {
       setPrevStyle(style);
     }
     canvas.classList.add(style);
-
-    // to remove background, need another canvas
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = webcam.videoWidth;
-    tempCanvas.height = webcam.videoHeight;
-
     if (bodypixnet) {
       drawimage(webcam, context, canvas);
     }
