@@ -14,7 +14,7 @@ function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webcamRef = useRef<Webcam>(null);
   const [bodypixnet, setBodypixnet] = useState<bodyPix.BodyPix>();
-  const [prevStyle, setPrevStyle] = useState<string>();
+  const [prevClassName, setPrevClassName] = useState<string>();
   const { locale } = useRouter();
   const t = locale === "en" ? en : ja;
 
@@ -34,16 +34,18 @@ function Home() {
     tempCanvas.width = webcam.videoWidth;
     tempCanvas.height = webcam.videoHeight;
     const tempCtx = tempCanvas.getContext("2d");
-    (async function loop() {
-      requestAnimationFrame(loop);
+    const segmentation = await bodypixnet.segmentPerson(webcam);
+    const mask = bodyPix.toMask(segmentation);
+    (async function drawMask() {
+      requestAnimationFrame(drawMask);
 
-      // paste mask on tempCanvas
+      // draw mask on tempCanvas
       const segmentation = await bodypixnet.segmentPerson(webcam);
       const mask = bodyPix.toMask(segmentation);
       tempCtx.putImageData(mask, 0, 0);
       // draw original image
       context.drawImage(webcam, 0, 0, canvas.width, canvas.height);
-      // then overwrap, masked area will be removed
+      // use destination-out, then only masked area will be removed
       context.save();
       context.globalCompositeOperation = "destination-out";
       context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
@@ -52,20 +54,20 @@ function Home() {
     })();
   };
 
-  const onClick = async (style: string) => {
+  const clickHandler = async (className: string) => {
     const webcam = webcamRef.current.video as HTMLVideoElement;
     const canvas = canvasRef.current;
     webcam.width = canvas.width = webcam.videoWidth;
     webcam.height = canvas.height = webcam.videoHeight;
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
-    if (prevStyle) {
-      canvas.classList.remove(prevStyle);
-      setPrevStyle(style);
+    if (prevClassName) {
+      canvas.classList.remove(prevClassName);
+      setPrevClassName(className);
     } else {
-      setPrevStyle(style);
+      setPrevClassName(className);
     }
-    canvas.classList.add(style);
+    canvas.classList.add(className);
     if (bodypixnet) {
       drawimage(webcam, context, canvas);
     }
@@ -88,30 +90,54 @@ function Home() {
         <div className={styles.right}>
           <h4 className={styles.title}>{t.select}</h4>
           <div className={styles.buttons}>
-            <button onClick={() => onClick(styles.argentina)}>
+            <button onClick={() => clickHandler(styles.argentina)}>
               {t.argentina}
             </button>
-            <button onClick={() => onClick(styles.austria)}>{t.austria}</button>
-            <button onClick={() => onClick(styles.brazil)}>{t.brazil}</button>
-            <button onClick={() => onClick(styles.bulgaria)}>
+            <button onClick={() => clickHandler(styles.austria)}>
+              {t.austria}
+            </button>
+            <button onClick={() => clickHandler(styles.brazil)}>
+              {t.brazil}
+            </button>
+            <button onClick={() => clickHandler(styles.bulgaria)}>
               {t.bulgaria}
             </button>
-            <button onClick={() => onClick(styles.cambodia)}>
+            <button onClick={() => clickHandler(styles.cambodia)}>
               {t.cambodia}
             </button>
-            <button onClick={() => onClick(styles.dubai)}>{t.dubai}</button>
-            <button onClick={() => onClick(styles.egypt)}>{t.egypt}</button>
-            <button onClick={() => onClick(styles.germany)}>{t.germany}</button>
-            <button onClick={() => onClick(styles.india)}>{t.india}</button>
-            <button onClick={() => onClick(styles.korea)}>{t.korea}</button>
-            <button onClick={() => onClick(styles.romania)}>{t.romania}</button>
-            <button onClick={() => onClick(styles.slovakia)}>
+            <button onClick={() => clickHandler(styles.dubai)}>
+              {t.dubai}
+            </button>
+            <button onClick={() => clickHandler(styles.egypt)}>
+              {t.egypt}
+            </button>
+            <button onClick={() => clickHandler(styles.germany)}>
+              {t.germany}
+            </button>
+            <button onClick={() => clickHandler(styles.india)}>
+              {t.india}
+            </button>
+            <button onClick={() => clickHandler(styles.korea)}>
+              {t.korea}
+            </button>
+            <button onClick={() => clickHandler(styles.romania)}>
+              {t.romania}
+            </button>
+            <button onClick={() => clickHandler(styles.slovakia)}>
               {t.slovakia}
             </button>
-            <button onClick={() => onClick(styles.spain)}>{t.spain}</button>
-            <button onClick={() => onClick(styles.tailand)}>{t.tailand}</button>
-            <button onClick={() => onClick(styles.taiwan)}>{t.taiwan}</button>
-            <button onClick={() => onClick(styles.turky)}>{t.turky}</button>
+            <button onClick={() => clickHandler(styles.spain)}>
+              {t.spain}
+            </button>
+            <button onClick={() => clickHandler(styles.tailand)}>
+              {t.tailand}
+            </button>
+            <button onClick={() => clickHandler(styles.taiwan)}>
+              {t.taiwan}
+            </button>
+            <button onClick={() => clickHandler(styles.turky)}>
+              {t.turky}
+            </button>
           </div>
         </div>
       </main>
