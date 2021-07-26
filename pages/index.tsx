@@ -9,6 +9,7 @@ import Webcam from "react-webcam";
 import { useRouter } from "next/dist/client/router";
 import en from "../locales/en";
 import ja from "../locales/ja";
+import test from "../assets/1.png";
 
 function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,11 +35,8 @@ function Home() {
     tempCanvas.width = webcam.videoWidth;
     tempCanvas.height = webcam.videoHeight;
     const tempCtx = tempCanvas.getContext("2d");
-    const segmentation = await bodypixnet.segmentPerson(webcam);
-    const mask = bodyPix.toMask(segmentation);
     (async function drawMask() {
       requestAnimationFrame(drawMask);
-
       // draw mask on tempCanvas
       const segmentation = await bodypixnet.segmentPerson(webcam);
       const mask = bodyPix.toMask(segmentation);
@@ -49,7 +47,6 @@ function Home() {
       context.save();
       context.globalCompositeOperation = "destination-out";
       context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-
       context.restore();
     })();
   };
