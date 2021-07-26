@@ -9,7 +9,6 @@ import Webcam from "react-webcam";
 import { useRouter } from "next/dist/client/router";
 import en from "../locales/en";
 import ja from "../locales/ja";
-import test from "../assets/1.png";
 
 function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
